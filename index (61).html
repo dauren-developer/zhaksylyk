@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2A3323">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Жаксылык">
+<title>Жаксылык</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#F3F3EC; --card:#FFFFFF; --soft:#E7E9DD; --chip:#DCE0D0;
+  --ink:#2A3323; --ink2:#3A4630; --muted:#79826C; --muted2:#A0A895;
+  --line:#DFE2D4; --line2:#C9CFB8;
+  --gr:#4A5A3A; --gr-d:#36432A; --gr-l:rgba(74,90,58,.10); --gr-m:rgba(74,90,58,.20);
+  --lite:#8B9B6F;
+  --red:#A85742; --red-l:rgba(168,87,66,.12);
+  --amber:#9A7B2E; --amber-l:rgba(154,123,46,.14);
+  --disp:'Oswald',system-ui,sans-serif; --body:'Manrope',system-ui,sans-serif;
+  --nav:68px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;
+  line-height:1.5;padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 10px)}
+button,input,select,textarea{font-family:inherit;font-size:16px;color:inherit}
+button{background:none;border:none;cursor:pointer;padding:0}
+:focus-visible{outline:2px solid var(--gr);outline-offset:2px}
+.app{max-width:560px;margin:0 auto}
+.pad{padding:0 16px}
+
+header{position:sticky;top:0;z-index:40;background:var(--ink);color:#fff}
+.hb{display:flex;align-items:center;gap:10px;padding:12px 16px 10px}
+.logo{width:32px;height:32px;border-radius:9px;background:var(--gr);color:#fff;display:grid;place-items:center;
+  font-family:var(--disp);font-weight:600;font-size:16px;flex:none}
+.htitle{flex:1;min-width:0}
+.htitle b{display:block;font-family:var(--disp);font-weight:500;font-size:16px;letter-spacing:.05em;
+  text-transform:uppercase;line-height:1.15}
+.htitle span{font-size:11.5px;color:#AFB89E}
+.iconbtn{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.1);display:grid;place-items:center;
+  color:#E4E8D8;flex:none;font-size:16px}
+.wknav{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border-radius:10px;
+  padding:4px;margin:0 16px 11px}
+.wknav button{width:32px;height:32px;border-radius:7px;color:#D3DAC3;display:grid;place-items:center;font-size:17px}
+.wknav b{flex:1;text-align:center;font-family:var(--disp);font-weight:400;font-size:14px;color:#fff}
+
+nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--ink);
+  box-shadow:0 -2px 18px rgba(42,51,35,.20);padding-bottom:env(safe-area-inset-bottom)}
+.nb{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.nb button{height:var(--nav);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  color:#98A288;font-size:10.5px;font-weight:700}
+.nb button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nb button.on{color:#fff}
+.nb button.on svg{stroke:#C3D49A}
+
+main{padding:16px 0 26px}
+.page{display:none}.page.on{display:block}
+
+h2.t{font-family:var(--disp);font-weight:500;font-size:20px;letter-spacing:.05em;text-transform:uppercase;margin:0 0 3px}
+p.sub{color:var(--muted);font-size:13.5px;margin:0 0 16px}
+h3.s{font-family:var(--disp);font-weight:500;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gr);margin:22px 0 10px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:15px;margin-bottom:12px;
+  box-shadow:0 1px 3px rgba(42,51,35,.05)}
+.card.tap:active{border-color:var(--gr)}
+
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px}
+.kpi small{display:block;font-size:11.5px;font-weight:700;color:var(--muted)}
+.kpi b{display:block;font-family:var(--disp);font-weight:500;font-size:23px;margin-top:4px}
+.kpi .d{font-size:12px;font-weight:600;margin-top:2px}
+.up{color:var(--gr)}.down{color:var(--red)}.dim{color:var(--muted)}
+
+.rowitem{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.rowitem:last-child{border-bottom:none}
+.rowitem .main{flex:1;min-width:0}
+.rowitem .main b{display:block;font-weight:700;font-size:15px}
+.rowitem .main span{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
+.rowitem .val{font-family:var(--disp);font-weight:400;font-size:16px;white-space:nowrap}
+
+label.f{display:block;margin-bottom:14px}
+label.f>span{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:6px}
+input,select,textarea{width:100%;padding:13px;border:1px solid var(--line2);border-radius:11px;
+  background:var(--card);color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gr)}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 21px,calc(100% - 13px) 21px;background-size:5px 5px;background-repeat:no-repeat;padding-right:38px}
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:14px;border-radius:11px;
+  font-weight:800;font-size:15px;background:var(--gr);color:#fff}
+.btn:active{background:var(--gr-d)}
+.btn.gh{background:var(--card);border:1px solid var(--line2);color:var(--ink);font-weight:700}
+.btn.gh:active{background:var(--soft)}
+.btn.sm{padding:9px 13px;font-size:13.5px;width:auto;border-radius:9px}
+.btn:disabled{opacity:.45}
+.rowbtns{display:flex;gap:9px;flex-wrap:wrap}
+.rowbtns .btn{width:auto;flex:1}
+
+.chips{display:flex;gap:7px;overflow-x:auto;padding:2px 16px 8px;margin:0 -16px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:9px 14px;border-radius:100px;border:1px solid var(--line2);background:var(--card);
+  font-size:13.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.chip.on{background:var(--gr);border-color:var(--gr);color:#fff}
+.chip small{display:block;font-size:10.5px;font-weight:600;opacity:.8}
+
+.who{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:100px;background:var(--chip);
+  font-size:13.5px;font-weight:700;margin:0 6px 6px 0}
+.who button{width:18px;height:18px;border-radius:50%;background:rgba(42,51,35,.13);color:var(--ink);
+  display:grid;place-items:center;font-size:12px;line-height:1}
+
+.lvl{display:inline-block;min-width:40px;text-align:center;padding:4px 10px;border-radius:20px;
+  font-family:var(--disp);font-weight:500;font-size:13.5px}
+.l6{background:var(--chip);color:var(--muted)}
+.l7{background:rgba(139,155,111,.22);color:#5A6A44}
+.l8{background:var(--gr-m);color:var(--gr-d)}
+.l9{background:var(--gr);color:#fff}
+
+.badge{display:inline-block;padding:3px 9px;border-radius:7px;font-size:11.5px;font-weight:700}
+.b-ok{background:var(--gr-m);color:var(--gr-d)}
+.b-no{background:var(--red-l);color:var(--red)}
+.b-dim{background:var(--chip);color:var(--muted)}
+.b-am{background:var(--amber-l);color:var(--amber)}
+
+.bar{height:8px;background:var(--soft);border-radius:5px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;border-radius:5px;transition:width .35s}
+
+.note{background:var(--gr-l);border:1px solid var(--gr-m);border-radius:11px;padding:12px 13px;
+  font-size:13px;color:var(--gr-d);margin-top:12px}
+.note.warn{background:var(--red-l);border-color:rgba(192,80,60,.3);color:#8E3524}
+.note.am{background:var(--amber-l);border-color:rgba(176,122,34,.3);color:#7A5313}
+.empty{text-align:center;padding:32px 18px;color:var(--muted)}
+.empty b{display:block;font-family:var(--disp);font-weight:500;font-size:16px;color:var(--ink);margin-bottom:6px}
+.mini{font-size:12.5px;color:var(--muted)}
+.hint{font-size:12.5px;color:var(--muted2);margin-top:6px}
+.del{color:var(--red);font-size:13px;font-weight:700}
+
+.ov{position:fixed;inset:0;z-index:80;background:rgba(42,51,35,.42);display:none;align-items:flex-end;justify-content:center}
+.ov.on{display:flex}
+.sheet{width:100%;max-width:560px;background:var(--bg);border-radius:20px 20px 0 0;
+  padding:20px 16px calc(20px + env(safe-area-inset-bottom));max-height:92vh;max-height:92dvh;overflow-y:auto;
+  animation:up .26s cubic-bezier(.2,.8,.3,1) both}
+@keyframes up{from{transform:translateY(20px);opacity:.4}to{transform:none;opacity:1}}
+.sh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.sh b{font-family:var(--disp);font-weight:500;font-size:17px;letter-spacing:.06em;text-transform:uppercase}
+.sh span{display:block;font-size:12.5px;color:var(--muted);font-family:var(--body);letter-spacing:0;
+  text-transform:none;font-weight:400}
+.x{width:32px;height:32px;border-radius:50%;border:1px solid var(--line2);background:var(--card);
+  display:grid;place-items:center;color:var(--muted);font-size:17px;flex:none}
+/* ---------- две колонки ---------- */
+.cols{display:grid;gap:12px}
+
+/* ---------- широкий экран ---------- */
+@media(min-width:900px){
+  body{padding-bottom:30px}
+  .app{max-width:1080px}
+  header{padding-bottom:2px}
+  .hb{padding:14px 24px 10px}
+  .htitle b{font-size:18px}
+  .wknav{margin:0 24px 10px;max-width:320px}
+  nav{position:static;box-shadow:none;background:transparent;padding:0}
+  .nb{max-width:none;grid-template-columns:repeat(5,auto);justify-content:start;gap:4px;padding:0 20px 10px}
+  .nb button{height:44px;flex-direction:row;gap:9px;padding:0 16px;border-radius:9px;font-size:14px}
+  .nb button.on{background:rgba(255,255,255,.12)}
+  .pad{padding:0 24px}
+  main{padding:22px 0 30px}
+  h2.t{font-size:24px}
+  p.sub{font-size:14.5px;max-width:70ch}
+  .kpis{grid-template-columns:repeat(4,1fr)}
+  .cols{grid-template-columns:1fr 1fr}
+  .chips{padding:2px 24px 10px;margin:0 -24px}
+  .sheet{max-width:620px;border-radius:16px;margin-bottom:auto;margin-top:auto;max-height:86vh}
+  .ov{align-items:center}
+  .card{padding:17px}
+}
+@media(min-width:1180px){
+  .app{max-width:1180px}
+  .cols{grid-template-columns:1fr 1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+#printArea{display:none}
+@media print{
+  @page{size:A4;margin:12mm}
+  body{background:#fff!important;padding:0!important;font-size:11pt}
+  header,nav,main,.ov{display:none!important}
+  #printArea{display:block!important}
+  .pr-h{border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:14px}
+  .pr-h b{font-family:var(--disp);font-size:19pt;letter-spacing:.04em;text-transform:uppercase;display:block}
+  .pr-h span{font-size:10pt;color:#444}
+  .pr-k{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+  .pr-k div{border:1px solid #999;border-radius:4px;padding:7px 12px}
+  .pr-k small{display:block;font-size:8.5pt;color:#555;text-transform:uppercase}
+  .pr-k b{font-family:var(--disp);font-size:14pt}
+  table.pr{width:100%;border-collapse:collapse;font-size:9pt}
+  table.pr th{background:#eee;border:1px solid #999;padding:6px 7px;text-align:left;font-size:8pt;text-transform:uppercase}
+  table.pr td{border:1px solid #bbb;padding:6px 7px;white-space:nowrap}
+  table.pr td:first-child{white-space:normal}
+  table.pr td.n,table.pr th.n{text-align:right}
+  table.pr tfoot td{background:#eee;font-weight:800}
+  .pr-f{margin-top:16px;font-size:8.5pt;color:#555;border-top:1px solid #999;padding-top:8px}
+  .pr-sign{margin-top:26px;display:flex;gap:50px;font-size:9.5pt}
+  .pr-sign div{flex:1;border-top:1px solid #000;padding-top:5px;color:#555}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="hb">
+    <div class="logo">Ж</div>
+    <div class="htitle"><b id="hT">Жаксылык</b><span id="hS"></span></div>
+    <button class="iconbtn" id="langBtn" onclick="setLang(LANG==='ru'?'kz':'ru')" aria-label="Язык"
+      style="width:auto;padding:0 11px;font-size:12.5px;font-weight:800;letter-spacing:.04em"></button>
+    <button class="iconbtn" id="syncBtn" onclick="go('more')" aria-label="Связь">○</button>
+  </div>
+  <div class="wknav">
+    <button onclick="wkShift(-1)" aria-label="Назад">‹</button>
+    <b id="wkLbl"></b>
+    <button onclick="wkShift(1)" aria-label="Вперёд">›</button>
+  </div>
+  <nav><div class="nb" id="nav"></div></nav>
+</header>
+<main>
+  <section class="page on" id="p-day"></section>
+  <section class="page" id="p-plan"></section>
+  <section class="page" id="p-calc"></section>
+  <section class="page" id="p-more"></section>
+</main>
+</div>
+<div id="printArea"></div>
+<div class="ov" id="ov" onclick="if(event.target===this)closeSheet()"><div class="sheet" id="sheet"></div></div>
+
+<script>
+/* ==========================================================
+   ЖАКСЫЛЫК — расчёт оплаты официантов
+   План на неделю → дневные планы по зонам → расстановка людей
+   ========================================================== */
+const CFG={graceMin:15};
+
+/* ============================================================
+   НАСТРОЙКИ ОБЩЕЙ БАЗЫ
+   Заполните один раз перед загрузкой на GitHub — тогда
+   пользователям останется только ввести почту и пароль.
+   ============================================================ */
+const SUPABASE_URL = "https://krtwbttarvsafrehedfl.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtydHdidHRhcnZzYWZyZWhlZGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwODQyNzEsImV4cCI6MjEwMzY2MDI3MX0.xZwD0qaPKE8OAWKoJKab7hVILKVnBNic39ATmaWK_fk";   // ключ anon public со вкладки Legacy
+
+const DAYS_RU=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const DAYS_KZ=['Дс','Сс','Ср','Бс','Жм','Сн','Жс'];
+const DAYFULL_KZ=['Дүйсенбі','Сейсенбі','Сәрсенбі','Бейсенбі','Жұма','Сенбі','Жексенбі'];
+const dayPlanLabel=()=>LANG==='kz'
+  ? DAYFULL_KZ[selDay]+' жоспары'
+  : 'План на '+DAYACC[selDay];
+const MON_KZ=['қаң','ақп','нау','сәу','мам','мау','шіл','там','қыр','қаз','қар','жел'];
+const DAYFULL=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
+const DAYACC=['понедельник','вторник','среду','четверг','пятницу','субботу','воскресенье'];
+const DAYKZ=['дүйсенбі','сейсенбі','сәрсенбі','бейсенбі','жұма','сенбі','жексенбі'];
+const MON_RU=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+const DAYS=new Proxy({},{get:(_,i)=>(LANG==='kz'?DAYS_KZ:DAYS_RU)[i],
+  has:()=>true,ownKeys:()=>['0','1','2','3','4','5','6'],
+  getOwnPropertyDescriptor:()=>({enumerable:true,configurable:true})});
+const MON=new Proxy({},{get:(_,i)=>(LANG==='kz'?MON_KZ:MON_RU)[i]});
+
+const defaultCalcCfg=()=>({shift8:375000,shift7:275000,week8:2200000,week7:1000000,late7:3,late6:4,reviewsPerLate:10});
+const DB={staff:[],zones:[],weeks:{},calcCfg:defaultCalcCfg()};
+const blankWeek=()=>({weekPlan:0,zonePlans:{},assign:{},marks:{},revenue:{},manual:{},notes:[],
+  lateManual:{},lateDays:{},reviews:{},shiftsManual:{},posuda:{},avans:{},overrideLevel:{},overrideReason:{}});
+/* zonePlans: {day:{zone:сумма}}   assign: {day:{zone:[staffId]}} — используются только для расстановки по зонам,
+   на расчёт процента больше не влияют. Процент считается по кассе, сменам и опозданиям — см. calc(). */
+
+let curWeek=mondayOf(new Date()), tab='day', selDay=(new Date().getDay()+6)%7;
+function mondayOf(d){const x=new Date(d);const w=(x.getDay()+6)%7;x.setDate(x.getDate()-w);x.setHours(0,0,0,0);return x;}
+const iso=d=>d.toISOString().slice(0,10);
+const dayDate=i=>{const d=new Date(curWeek);d.setDate(d.getDate()+i);return d;};
+const fmt=n=>Math.round(n||0).toLocaleString('ru-RU').replace(/,/g,' ')+' ₸';
+const fmtS=n=>{n=Math.round(n||0);return n>=1e6?(n/1e6).toFixed(2).replace('.',',')+' млн':n.toLocaleString('ru-RU').replace(/,/g,' ');};
+function W(){
+  const k=iso(curWeek);if(!DB.weeks[k])DB.weeks[k]=blankWeek();
+  const w=DB.weeks[k];
+  if(!w.lateManual)w.lateManual={};
+  if(!w.lateDays)w.lateDays={};
+  if(!w.reviews)w.reviews={};
+  if(!w.shiftsManual)w.shiftsManual={};
+  if(!w.posuda)w.posuda={};
+  if(!w.avans)w.avans={};
+  if(!w.overrideLevel)w.overrideLevel={};
+  if(!w.overrideReason)w.overrideReason={};
+  return w;
+}
+function wkLabel(){const e=new Date(curWeek);e.setDate(e.getDate()+6);
+  return `${curWeek.getDate()} ${MON[curWeek.getMonth()]} — ${e.getDate()} ${MON[e.getMonth()]}`;}
+function wkShift(n){const d=new Date(curWeek);d.setDate(d.getDate()+7*n);curWeek=d;render();fgSyncLate();}
+const mins=t=>{if(!t)return null;const[h,m]=String(t).split(':').map(Number);return h*60+(m||0);};
+const norm=s=>{let t=String(s||'').toLowerCase().replace(/ё/g,'е').replace(/\s+/g,' ').trim();
+  return t.replace(/[қғңүұөһі]/g,ch=>({'қ':'к','ғ':'г','ң':'н','ү':'у','ұ':'у','ө':'о','һ':'х','і':'и'}[ch]));};
+
+
+/* ================= ЯЗЫК ================= */
+let LANG=(()=>{try{return localStorage.getItem('zh_lang')||'ru'}catch(e){return 'ru'}})();
+function setLang(l){LANG=l;try{localStorage.setItem('zh_lang',l)}catch(e){}drawNav();render();}
+const TR={
+"Уровень — по кассе за смену (или за неделю, если смены не внесены) и по опозданиям. 9% ставится вручную по каждому официанту отдельно.":
+  "Деңгей — ауысымдағы касса (немесе ауысым енгізілмесе — аптадағы касса) және кешігулер бойынша. 9% әр даяшыға жеке қолмен қойылады.",
+"Отчёт за неделю не загружен":"Аптаның есебі жүктелмеген",
+"Касса недели":"Аптаның кассасы",
+"К выплате":"Төленетіні",
+"от кассы":"кассадан",
+"За смену":"Ауысымға",
+"без смен — по неделе":"ауысымсыз — апта бойынша",
+"смен":"ауысым",
+"опозданий":"кешігу",
+"касса →":"касса →",
+"дисциплина →":"тәртіп →",
+"вручную":"қолмен",
+"штраф":"айыппұл",
+"посуда":"ыдыс",
+"аванс":"аванс",
+"причина 9%":"9% себебі",
+"Смены, опоздания, 9%":"Ауысым, кешігу, 9%",
+"Нет данных":"Дерек жоқ",
+"Загрузите отчёт за неделю.":"Апта есебін жүктеңіз.",
+"Отчёт в PDF":"PDF есебі",
+"Правила расчёта":"Есептеу ережелері",
+"пороги можно менять":"шектерді өзгертуге болады",
+"Если известны смены — касса за смену":"Ауысым белгілі болса — ауысымдағы касса",
+"От суммы — 8%, ₸":"Соманан — 8%, ₸",
+"От суммы — 7%, ₸":"Соманан — 7%, ₸",
+"Если смены не вносили — вся касса за неделю":"Ауысым енгізілмесе — аптаның бүкіл кассасы",
+"Опоздания — потолок уровня":"Кешігу — деңгей шегі",
+"Опозданий для потолка 7%":"7% шегі үшін кешігу саны",
+"Опозданий для потолка 6%":"6% шегі үшін кешігу саны",
+"Итоговый уровень — меньший из двух: что дала касса и что позволила дисциплина. 9% в расчёте не участвует — хозяйка ставит его вручную по конкретному человеку.":
+  "Түпкілікті деңгей — екеуінің кішісі: касса не берді және тәртіп нені рұқсат етті. 9% есепке кірмейді — иесі оны нақты адамға қолмен қояды.",
+"Настроить пороги":"Шектерді баптау",
+"Выгрузка за неделю":"Аптаның жүктемесі",
+"Отчёт бухгалтера — касса по официантам":"Бухгалтер есебі — даяшылар бойынша касса",
+"Принимает и «Ведомость заработной платы», и старый отчёт iiko по зонам. Если в файле есть колонки «за посуду» и «авансы» — заберёт их тоже.":
+  "«Жалақы ведомосін» де, ескі iiko аймақтық есебін де қабылдайды. Файлда «ыдыс үшін» және «аванстар» бағандары болса — соларды да алады.",
+"Опоздания и смены":"Кешігу мен ауысымдар",
+"вносятся вручную по каждому официанту":"әр даяшыға қолмен енгізіледі",
+"На вкладке «Расчёт» у каждой карточки — кнопка «Смены, опоздания, 9%».":
+  "«Есептеу» бөлімінде әр карточкада «Ауысым, кешігу, 9%» түймесі бар.",
+"вносится вручную каждую неделю":"апта сайын қолмен енгізіледі",
+"Смен за неделю":"Аптадағы ауысым саны",
+"если пусто — расчёт по всей неделе":"бос болса — есеп апта бойынша",
+"Опозданий за неделю":"Аптадағы кешігу саны",
+"За посуду, ₸ (вычитается)":"Ыдыс үшін, ₸ (шегеріледі)",
+"Авансы, ₸ (вычитается)":"Аванстар, ₸ (шегеріледі)",
+"9% вручную":"9% қолмен",
+"Не назначать — считать автоматически":"Тағайындамау — автоматты есептеу",
+"Причина":"Себебі",
+"за что именно":"нақты не үшін",
+"имя должно совпадать с отчётом бухгалтера":"есім бухгалтер есебімен сәйкес болуы керек",
+"Опоздания":"Кешігулер",
+"Нажмите на имя — отметится опоздание за этот день. Нажмите ещё раз — снимет.":
+  "Есімді басыңыз — осы күнге кешігу белгіленеді. Тағы басса — алынады.",
+"опоздал":"кешікті",
+"Утром: поставьте план каждой зоне, выберите, кто работает, и отметьте, кто опоздал.":
+  "Таңертең: әр аймаққа жоспар қойып, кім жұмыс істейтінін таңдап, кім кешіккенін белгілеңіз.",
+"опоздания — по дням, остальное — раз в неделю":"кешігу — күн сайын, қалғаны — аптасына бір рет",
+"Опоздания за неделю:":"Аптадағы кешігулер:",
+"Остальное — раз в неделю":"Қалғаны — аптасына бір рет",
+"отмечаются каждый день на вкладке «Сегодня»":"«Бүгін» бөлімінде күн сайын белгіленеді",
+"Смены, посуда, авансы, 9%":"Ауысым, ыдыс, аванс, 9%",
+"вносятся раз в неделю на вкладке «Расчёт»":"«Есептеу» бөлімінде аптасына бір рет енгізіледі",
+"Отзывов за неделю":"Аптадағы пікірлер",
+"отзывов гасят 1 опоздание":"пікір 1 кешігуді жояды",
+"Отзывы гасят опоздания":"Пікірлер кешігуді жояды",
+"Отзывов за 1 погашенное опоздание":"1 кешігу жойылуы үшін пікір саны",
+"отзывов гасят одно опоздание.":"пікір бір кешігуді жояды.",
+"отзывов":"пікір",
+"было":"болды",
+"День по зонам":"Аймақтар бойынша күн",
+"Утром: поставьте план каждой зоне и выберите, кто в ней сегодня работает.":"Таңертең: әр аймаққа жоспар қойып, бүгін кім жұмыс істейтінін таңдаңыз.",
+"Сначала настройка":"Алдымен баптау",
+"Добавьте официантов и зоны — без них расставить некого.":"Даяшылар мен аймақтарды қосыңыз — онсыз ешкімді қоя алмайсыз.",
+"Открыть настройки":"Баптауды ашу",
+"Ставить план":"Жоспар қою",
+"Никого не поставили":"Ешкім қойылмаған",
+"На человека выходит":"Бір адамға шығады",
+"работают":"жұмыс істейді",
+"+ Поставить официанта":"+ Даяшы қою",
+"Штрафы и замечания":"Айыппұлдар мен ескертулер",
+"За этот день записей нет":"Бұл күнге жазба жоқ",
+"+ Штраф или замечание":"+ Айыппұл немесе ескерту",
+"без комментария":"түсініктемесіз",
+"замечание":"ескерту",
+"План на неделю":"Аптаға жоспар",
+"Хозяйка ставит общий план на неделю заранее. Дневные планы по зонам администратор расставляет каждое утро на вкладке «Сегодня».":"Иесі аптаға жалпы жоспарды алдын ала қояды. Аймақтардың күндік жоспарын әкімші әр таң сайын «Бүгін» бөлімінде қояды.",
+"План кафе на неделю, ₸":"Кафенің аптаға жоспары, ₸",
+"Сохранить":"Сақтау",
+"Расставлено по дням":"Күндерге бөлінген",
+"плана":"жоспардың",
+"Осталось расставить":"Бөлу қалды",
+"Перебор":"Артық",
+"По дням":"Күндер бойынша",
+"план не поставлен":"жоспар қойылмаған",
+"Поставьте план на неделю — дальше можно расставлять его по дням и зонам.":"Аптаға жоспар қойыңыз — содан кейін оны күндер мен аймақтарға бөлуге болады.",
+"Расписание":"Кесте",
+"Загрузите файл Word, который вы делаете каждую неделю, — система разберёт его сама.":"Апта сайын жасайтын Word файлын жүктеңіз — жүйе оны өзі оқиды.",
+"Допуск опоздания":"Кешігуге рұқсат",
+"минут от своего времени.":"минут өз уақытынан.",
+"Файл расписания (.docx)":"Кесте файлы (.docx)",
+"В таблице: первая строка — дни недели, дальше «Имя 09:00». Имена должны совпадать с теми, что заведены в системе.":"Кестеде: бірінші жол — апта күндері, әрі қарай «Есім 09:00». Есімдер жүйедегімен сәйкес болуы керек.",
+"Скопировать прошлую неделю":"Өткен аптаны көшіру",
+"Очистить":"Тазарту",
+"Нет официантов":"Даяшылар жоқ",
+"Добавить":"Қосу",
+"смен нет":"ауысым жоқ",
+"смены на неделю":"аптаға ауысымдар",
+"Слева начало смены, справа конец.":"Сол жақта ауысымның басы, оң жақта соңы.",
+"Расчёт недели":"Аптаның есебі",
+"Личный план — доля от плана зоны за каждый день, где официант работал.":"Жеке жоспар — даяшы жұмыс істеген әр күнгі аймақ жоспарының үлесі.",
+"Не хватает данных:":"Дерек жетіспейді:",
+"Дневные планы по зонам не поставлены":"Аймақтардың күндік жоспары қойылмаған",
+"Выгрузка iiko не загружена":"iiko жүктемесі жүктелмеген",
+"Расписание не загружено":"Кесте жүктелмеген",
+"Выгрузка Workpace не загружена":"Workpace жүктемесі жүктелмеген",
+"заполнить":"толтыру",
+"Касса недели":"Аптаның кассасы",
+"К выплате":"Төленетіні",
+"от кассы":"кассадан",
+"план":"жоспар",
+"План":"Жоспар",
+"Факт":"Нақты",
+"опозданий":"кешігу",
+"прогулов":"келмеу",
+"смен":"ауысым",
+"штраф":"айыппұл",
+"Критерии вручную":"Критерийлер қолмен",
+"не хватило":"жетпеді",
+"не выполнено даже для 6%":"6% үшін де орындалмаған",
+"не дотянул до 6%":"6%-ға жетпеді",
+"Нет данных":"Дерек жоқ",
+"Заполните неделю.":"Апта деректерін толтырыңыз.",
+"Отчёт в PDF":"PDF есебі",
+"критерии за неделю":"аптаның критерийлері",
+"Настройки":"Баптаулар",
+"Официанты":"Даяшылар",
+"Список пуст":"Тізім бос",
+"+ Добавить официанта":"+ Даяшы қосу",
+"работает":"жұмыста",
+"уволен":"жұмыстан шыққан",
+"Зоны":"Аймақтар",
+"Зон нет":"Аймақ жоқ",
+"убрать":"алу",
+"+ Добавить зону":"+ Аймақ қосу",
+"Критерии":"Критерийлер",
+"считается автоматически":"автоматты есептеледі",
+"вносится вручную":"қолмен енгізіледі",
+"+ Свой критерий":"+ Өз критерийі",
+"Условия уровней":"Деңгей шарттары",
+"Настроить":"Баптау",
+"Условия не заданы — уровень недоступен":"Шарттар жоқ — деңгей қолжетімсіз",
+"Условий нет — 6% получают все, кто не дотянул выше":"Шарт жоқ — 6% жоғарыға жетпегендердің бәріне беріледі",
+"условия 6% не выполнены":"6% шарттары орындалмаған",
+"Условия соединяются через «и». Система проверяет сверху вниз: 9%, затем 8%, 7% и 6%.":"Шарттар «және» арқылы қосылады. Жүйе жоғарыдан төмен тексереді: 9%, содан кейін 8%, 7% және 6%.",
+"Что подошло первым — то и назначается. Если у 6% условий нет, он достаётся всем остальным.":"Бірінші сәйкес келгені тағайындалады. 6%-да шарт болмаса, ол қалғандардың бәріне беріледі.",
+"Выгрузки за неделю":"Аптаның жүктемелері",
+"Отчёт iiko — выручка официантов":"iiko есебі — даяшылардың түсімі",
+"Загружено:":"Жүктелді:",
+"официантов, касса":"даяшы, касса",
+"Отчёт Workpace — приходы и уходы":"Workpace есебі — келу мен кету",
+"Загружено отметок:":"Жүктелген белгілер:",
+"Берутся только фактические приход и уход. Опоздания считает эта система по расписанию.":"Тек нақты келу мен кету алынады. Кешігулерді осы жүйе кесте бойынша есептейді.",
+"Общая база":"Ортақ база",
+"вход не выполнен":"кіру орындалмаған",
+"синхронизировано":"синхрондалған",
+"отправка…":"жіберілуде…",
+"нет связи или нужен вход":"байланыс жоқ немесе кіру керек",
+"выключено":"өшірулі",
+"на связи":"байланыста",
+"проверьте":"тексеріңіз",
+"Обновить":"Жаңарту",
+"Выйти":"Шығу",
+"Войти":"Кіру",
+"Настройка":"Баптау",
+"Работает только здесь":"Тек осында жұмыс істейді",
+"Что вы вносите, на других телефонах не появится.":"Енгізгеніңіз басқа телефондарда көрінбейді.",
+"Подключить общую базу":"Ортақ базаны қосу",
+"Данные":"Деректер",
+"Сохранить в файл":"Файлға сақтау",
+"Загрузить файл":"Файлды жүктеу",
+"Всё сохраняется на этом устройстве само. Закрытие вкладки данные не удалит.":"Барлығы осы құрылғыда өзі сақталады. Бетті жапсаңыз деректер жойылмайды.",
+"Автосохранение недоступно — обязательно сохраняйте в файл.":"Автосақтау қолжетімсіз — міндетті түрде файлға сақтаңыз.",
+"Удалить все данные":"Барлық деректі жою",
+"Официант":"Даяшы",
+"Новый официант":"Жаңа даяшы",
+"имя должно совпадать с iiko и расписанием":"есім iiko-мен және кестемен сәйкес болуы керек",
+"Имя и фамилия":"Аты-жөні",
+"Короткое имя (как в расписании)":"Қысқа есім (кестедегідей)",
+"Как записан в iiko":"iiko-да қалай жазылған",
+"если отличается":"егер басқаша болса",
+"Уволить":"Жұмыстан шығару",
+"Вернуть":"Қайтару",
+"Свой критерий":"Өз критерийі",
+"появится при настройке уровней":"деңгейлерді баптағанда шығады",
+"Название":"Атауы",
+"Тип значения":"Мән түрі",
+"Да / нет":"Иә / жоқ",
+"Число":"Сан",
+"Проценты":"Пайыз",
+"Уровень":"Деңгей",
+"условия через «и»":"шарттар «және» арқылы",
+"Условий нет":"Шарт жоқ",
+"+ Добавить условие":"+ Шарт қосу",
+"Готово":"Дайын",
+"Условие для":"Шарт",
+"выберите критерий":"критерий таңдаңыз",
+"Критерий":"Критерий",
+"Должно быть":"Болуы керек",
+"Условие":"Шарт",
+"не меньше":"кем емес",
+"не больше":"көп емес",
+"ровно":"дәл",
+"Значение":"Мәні",
+"Добавить условие":"Шарт қосу",
+"чтобы все трое видели одно и то же":"үшеуі де бірдей көру үшін",
+"Один раз создаётся бесплатный проект на supabase.com.":"Бір рет supabase.com-да тегін жоба құрылады.",
+"Адрес проекта (Project URL)":"Жоба мекенжайы (Project URL)",
+"Публичный ключ (anon public)":"Ашық кілт (anon public)",
+"Подключить":"Қосу",
+"Отключить":"Өшіру",
+"Как настроить":"Қалай баптау керек",
+"Скопировать код":"Кодты көшіру",
+"Вход":"Кіру",
+"общая база кафе":"кафенің ортақ базасы",
+"Почта":"Пошта",
+"Пароль":"Құпия сөз",
+"Работать без облака":"Бұлтсыз жұмыс істеу",
+"план на":"жоспар",
+"План зоны на день, ₸":"Аймақтың күндік жоспары, ₸",
+"кто работает":"кім жұмыс істейді",
+"По расписанию сегодня":"Бүгін кесте бойынша",
+"Остальные":"Қалғандары",
+"Штраф или замечание":"Айыппұл немесе ескерту",
+"Сумма штрафа, ₸":"Айыппұл сомасы, ₸",
+"0 — если просто замечание":"0 — жай ескерту болса",
+"За что":"Не үшін",
+"Записать":"Жазу",
+"Понедельник":"Дүйсенбі","Вторник":"Сейсенбі","Среда":"Сәрсенбі","Четверг":"Бейсенбі",
+"Пятница":"Жұма","Суббота":"Сенбі","Воскресенье":"Жексенбі",
+"понедельник":"дүйсенбі","вторник":"сейсенбі","среда":"сәрсенбі","четверг":"бейсенбі",
+"пятница":"жұма","суббота":"сенбі","воскресенье":"жексенбі",
+"Сегодня":"Бүгін","Смены":"Ауысымдар","Расчёт":"Есептеу","Ещё":"Тағы",
+"день по зонам":"аймақтар бойынша күн","на неделю":"аптаға","расписание недели":"аптаның кестесі",
+"итог недели":"аптаның қорытындысы",
+"Выполнение личного плана":"Жеке жоспардың орындалуы",
+"Опозданий за неделю":"Аптадағы кешігулер",
+"Прогулов за неделю":"Аптадағы келмеу",
+"Отработано смен за неделю":"Аптада істелген ауысым",
+"проценты":"пайыз","да / нет":"иә / жоқ","число":"сан"
+};
+const TRL=Object.entries(TR).sort((a,b)=>b[0].length-a[0].length);
+const T=s=>LANG==='kz'?(TR[s]||s):s;
+const RX=new RegExp(TRL.map(([r])=>r.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g');
+function swap(v){return v.replace(RX,m=>TR[m]||m);}
+function trDom(root){
+  if(LANG!=='kz'||!root)return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),arr=[];
+  while(w.nextNode())arr.push(w.currentNode);
+  arr.forEach(n=>{const o=swap(n.nodeValue);if(o!==n.nodeValue)n.nodeValue=o;});
+  root.querySelectorAll('[placeholder]').forEach(e=>e.setAttribute('placeholder',swap(e.getAttribute('placeholder'))));
+}
+
+/* ================= ХРАНЕНИЕ ================= */
+const KEY='zhaksylyk_v2';
+let storeOK=true;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){storeOK=false;}cloudQueue();}
+function load(){try{const r=localStorage.getItem(KEY);if(!r)return false;const o=JSON.parse(r);
+  if(o&&o.staff&&o.weeks){Object.assign(DB,o);DB.calcCfg=Object.assign(defaultCalcCfg(),DB.calcCfg||{});return true;}}catch(e){storeOK=false;}return false;}
+function wipe(){if(!confirm('Удалить все данные с этого устройства? Отменить будет нельзя.'))return;
+  try{localStorage.removeItem(KEY);}catch(e){}location.reload();}
+
+/* ================= ОБЛАКО ================= */
+const CLOUD={url:'',key:'',on:false,rev:0,applying:false,timer:null,state:'off',who:'',err:''};
+const CKEY='zh_cloud2', AKEY='zh_auth2';
+const AUTH={token:'',refresh:'',email:'',exp:0};
+function cloudLoadCfg(){
+  try{const c=JSON.parse(localStorage.getItem(CKEY)||'null');
+    if(c&&c.url&&c.key){CLOUD.url=c.url.replace(/\/+$/,'');CLOUD.key=c.key;CLOUD.on=true;return;}}catch(e){}
+  if(SUPABASE_URL&&SUPABASE_KEY){
+    CLOUD.url=SUPABASE_URL.replace(/\/+$/,'');CLOUD.key=SUPABASE_KEY;CLOUD.on=true;
+    try{localStorage.setItem(CKEY,JSON.stringify({url:CLOUD.url,key:CLOUD.key}));}catch(e){}
+  }
+}
+function cloudSaveCfg(u,k){CLOUD.url=u.replace(/\/+$/,'');CLOUD.key=k;CLOUD.on=!!(u&&k);
+  try{localStorage.setItem(CKEY,JSON.stringify({url:CLOUD.url,key:CLOUD.key}));}catch(e){}}
+function cloudOff(){CLOUD.on=false;CLOUD.state='off';try{localStorage.removeItem(CKEY);}catch(e){}syncBadge();render();}
+function authLoad(){try{Object.assign(AUTH,JSON.parse(localStorage.getItem(AKEY)||'{}'));}catch(e){}}
+function authSave(){try{localStorage.setItem(AKEY,JSON.stringify(AUTH));}catch(e){}}
+function authClear(){AUTH.token='';AUTH.refresh='';AUTH.email='';AUTH.exp=0;try{localStorage.removeItem(AKEY);}catch(e){}}
+const H=()=>({apikey:CLOUD.key,Authorization:'Bearer '+(AUTH.token||CLOUD.key),'Content-Type':'application/json'});
+async function signIn(email,pass){
+  const r=await fetch(`${CLOUD.url}/auth/v1/token?grant_type=password`,{method:'POST',
+    headers:{apikey:CLOUD.key,'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+  const a=await r.json();
+  if(!r.ok)throw new Error(a.error_description||a.msg||'Не удалось войти');
+  AUTH.token=a.access_token;AUTH.refresh=a.refresh_token;AUTH.email=email;
+  AUTH.exp=Date.now()+(a.expires_in||3600)*1000;CLOUD.who=email.split('@')[0];authSave();return true;
+}
+async function refreshToken(){if(!AUTH.refresh)return false;
+  try{const r=await fetch(`${CLOUD.url}/auth/v1/token?grant_type=refresh_token`,{method:'POST',
+      headers:{apikey:CLOUD.key,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:AUTH.refresh})});
+    const a=await r.json();if(!r.ok)return false;
+    AUTH.token=a.access_token;AUTH.refresh=a.refresh_token;AUTH.exp=Date.now()+(a.expires_in||3600)*1000;
+    authSave();return true;}catch(e){return false;}}
+async function ensureToken(){if(!AUTH.token)return false;
+  if(Date.now()>AUTH.exp-60000)return await refreshToken();return true;}
+async function cloudPull(silent){
+  if(!CLOUD.on)return;
+  if(!await ensureToken()){CLOUD.state='err';syncBadge();return;}
+  try{
+    const r=await fetch(`${CLOUD.url}/rest/v1/state?id=eq.1&select=rev,data`,{headers:H()});
+    if(!r.ok){const b=await r.text();throw new Error(errText(r.status,b));}
+    const a=await r.json();
+    if(!a.length){await cloudPush();return;}
+    if(a[0].rev>CLOUD.rev){CLOUD.applying=true;Object.assign(DB,a[0].data||{});DB.calcCfg=Object.assign(defaultCalcCfg(),DB.calcCfg||{});CLOUD.rev=a[0].rev;
+      CLOUD.applying=false;CLOUD.state='ok';syncBadge();if(!silent)render();else render();return true;}
+    CLOUD.state='ok';syncBadge();
+  }catch(e){CLOUD.state='err';CLOUD.err=String(e.message||e);syncBadge();}
+}
+async function cloudPush(){
+  if(!CLOUD.on||CLOUD.applying)return;
+  if(!await ensureToken()){CLOUD.state='err';syncBadge();return;}
+  CLOUD.state='sync';syncBadge();
+  try{
+    const r=await fetch(`${CLOUD.url}/rest/v1/state?on_conflict=id`,{method:'POST',
+      headers:{...H(),Prefer:'resolution=merge-duplicates,return=representation'},
+      body:JSON.stringify({id:1,rev:CLOUD.rev+1,data:DB,who:CLOUD.who||'—',updated_at:new Date().toISOString()})});
+    if(!r.ok){const b=await r.text();throw new Error(errText(r.status,b));}
+    const a=await r.json();if(a&&a[0])CLOUD.rev=a[0].rev;
+    CLOUD.state='ok';
+  }catch(e){CLOUD.state='err';CLOUD.err=String(e.message||e);}
+  syncBadge();
+}
+function errText(code,body){
+  if(code===404||/does not exist|relation/i.test(body))
+    return 'Таблица не создана. Выполните SQL-код в Supabase (кнопка «Настройка»)';
+  if(code===401||code===403)return 'Нет доступа. Проверьте ключ или войдите заново';
+  if(code===400)return 'Ошибка запроса: '+body.slice(0,120);
+  return 'Ошибка '+code;
+}
+/* ================= FACE GUARD — авто-опоздания ================= */
+const FG_URL='https://iurclpqmjnrzmyhspzcr.supabase.co';
+const FG_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1cmNscHFtam5yem15aHNwemNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5NDE1ODksImV4cCI6MjEwNDUxNzU4OX0.GBmcKXVlYh8nri2-20XrwlRh93BxLUXrXiSc8IH4ISc';
+const FG_EMAIL='kiosk@zhaksylyk.kz', FG_PASS='123456789';
+const FG_AUTH={token:'',exp:0};
+let FG_CACHE={staff:[],days:{},ts:0,err:''};
+let FG_SYNCING=false;
+const KZ_LETTER_MAP={'қ':'к','ғ':'г','ң':'н','ү':'у','ұ':'у','ө':'о','һ':'х','і':'и'};
+function fgNormName(s){
+  let t=String(s||'').toLowerCase().replace(/ё/g,'е').replace(/\s+/g,' ').trim();
+  t=t.replace(/[қғңүұөһі]/g,ch=>KZ_LETTER_MAP[ch]);
+  return t;
+}
+function fgShortName(s){const p=fgNormName(s).split(' ');return p.slice(0,2).join(' ');}
+async function fgSignIn(){
+  const r=await fetch(`${FG_URL}/auth/v1/token?grant_type=password`,{method:'POST',
+    headers:{apikey:FG_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:FG_EMAIL,password:FG_PASS})});
+  const a=await r.json();
+  if(!r.ok)throw new Error(a.error_description||a.msg||'Face Guard: не удалось войти');
+  FG_AUTH.token=a.access_token;FG_AUTH.exp=Date.now()+(a.expires_in||3600)*1000;
+}
+async function fgEnsureToken(){if(!FG_AUTH.token||Date.now()>FG_AUTH.exp-60000)await fgSignIn();}
+async function fgPull(force){
+  if(!force&&FG_CACHE.ts&&Date.now()-FG_CACHE.ts<120000)return FG_CACHE;
+  try{
+    await fgEnsureToken();
+    const r=await fetch(`${FG_URL}/rest/v1/faceguard_state?id=eq.1&select=data`,
+      {headers:{apikey:FG_KEY,Authorization:'Bearer '+FG_AUTH.token}});
+    if(!r.ok)throw new Error('Face Guard: ошибка '+r.status);
+    const a=await r.json();
+    const d=(a&&a[0]&&a[0].data)||{staff:[],days:{}};
+    FG_CACHE={staff:d.staff||[],days:d.days||{},ts:Date.now(),err:''};
+  }catch(e){FG_CACHE.err=String(e.message||e);}
+  return FG_CACHE;
+}
+function fgMatchId(staffName){
+  const full=fgNormName(staffName), short=fgShortName(staffName);
+  let hit=FG_CACHE.staff.find(x=>fgNormName(x.name)===full);
+  if(!hit)hit=FG_CACHE.staff.find(x=>fgShortName(x.name)===short);
+  return hit?hit.id:null;
+}
+async function fgSyncLate(){
+  if(FG_SYNCING)return;FG_SYNCING=true;
+  try{
+    await fgPull(true);
+    if(FG_CACHE.err){FG_SYNCING=false;render();return;}
+    const w=W();
+    DB.staff.forEach(s=>{
+      const fgId=fgMatchId(s.name);
+      if(!fgId)return;
+      const map={};
+      for(let i=0;i<7;i++){
+        const k=iso(dayDate(i));
+        const rec=(FG_CACHE.days[k]||{})[fgId];
+        if(rec&&rec.late)map[i]=true;
+      }
+      w.lateDays[s.id]=map;
+    });
+    save();
+  }catch(e){FG_CACHE.err=String(e.message||e);}
+  FG_SYNCING=false;render();
+}
+let pushT=null;
+function cloudQueue(){if(!CLOUD.on||CLOUD.applying)return;clearTimeout(pushT);pushT=setTimeout(cloudPush,900);}
+function syncBadge(){
+  const b=document.getElementById('syncBtn');
+  const m={off:['○','#98A288'],ok:['●','#C3D49A'],sync:['◐','#E0C07A'],err:['✕','#E39A88']};
+  const[c,col]=m[CLOUD.state]||m.off;
+  if(b){b.textContent=c;b.style.color=col;}
+  const st=document.getElementById('cloudState');
+  if(st){
+    const txt={ok:'синхронизировано',sync:'отправка…',err:CLOUD.err||'нет связи или нужен вход',off:'выключено'};
+    st.textContent=T(txt[CLOUD.state]||'')||txt[CLOUD.state];
+    const bg=document.getElementById('cloudBadge');
+    if(bg){bg.className='badge '+(CLOUD.state==='ok'?'b-ok':(CLOUD.state==='sync'?'b-dim':'b-no'));
+      bg.textContent=T(CLOUD.state==='ok'?'на связи':(CLOUD.state==='sync'?'отправка…':'проверьте'));}
+  }}
+function cloudStart(){cloudLoadCfg();authLoad();
+  if(!CLOUD.on){CLOUD.state='off';syncBadge();return;}
+  if(!AUTH.token){CLOUD.state='err';syncBadge();loginScreen();return;}
+  cloudPull().then(()=>{render();fgSyncLate();});
+  clearInterval(CLOUD.timer);CLOUD.timer=setInterval(()=>cloudPull(true),8000);}
+function loginScreen(){
+  sheet(`<div style="text-align:center;margin-bottom:18px">
+      <div style="width:56px;height:56px;border-radius:15px;background:var(--gr);color:#fff;
+        display:grid;place-items:center;font-family:var(--disp);font-weight:600;font-size:26px;margin:0 auto 12px">Ж</div>
+      <div style="font-family:var(--disp);font-weight:500;font-size:19px;letter-spacing:.06em;text-transform:uppercase">Жаксылык</div>
+      <div class="mini" style="margin-top:3px">Вход в систему</div></div>
+    <label class="f"><span>Почта</span><input id="lgE" type="email" placeholder="admin@zhaksylyk.kz"></label>
+    <label class="f"><span>Пароль</span><input id="lgP" type="password"></label>
+    <div class="note warn" id="lgErr" style="display:none"></div>
+    <button class="btn" id="lgB" onclick="doLogin()">Войти</button>
+    <button class="btn gh" style="margin-top:9px" onclick="closeSheet();go('more')">Работать без облака</button>`);
+}
+async function doLogin(){
+  const e=document.getElementById('lgE').value.trim(),p=document.getElementById('lgP').value;
+  const err=document.getElementById('lgErr'),btn=document.getElementById('lgB');
+  if(!e||!p){err.textContent='Введите почту и пароль';err.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Вхожу…';
+  try{await signIn(e,p);closeSheet();await cloudPull();render();
+    clearInterval(CLOUD.timer);CLOUD.timer=setInterval(()=>cloudPull(true),8000);}
+  catch(ex){err.textContent=String(ex.message||ex);err.style.display='block';
+    btn.disabled=false;btn.textContent='Войти';}
+}
+function logout(){authClear();CLOUD.state='err';syncBadge();loginScreen();}
+
+/* ================= РАСЧЁТ ================= */
+/* Уровень считается из двух потолков — берётся МЕНЬШИЙ:
+     1) потолок по кассе: если внесены смены — касса ÷ смены сравнивается
+        с cfg.shift8/cfg.shift7; если смены не внесены — берётся вся
+        недельная касса и сравнивается с cfg.week8/cfg.week7;
+     2) потолок по опозданиям: cfg.late6 и больше — 6%, cfg.late7 — 7%, меньше — можно 8%.
+   9% автоматически не выдаётся — хозяйка ставит его вручную (overrideLevel). */
+function calc(){
+  const w=W(),cfg=DB.calcCfg||defaultCalcCfg();
+  const out={rows:[],fund:0,factTotal:0};
+  DB.staff.filter(s=>s.active).forEach(s=>{
+    const fact=+(w.revenue[s.iiko||s.name]||0);
+    const shifts=+((w.shiftsManual||{})[s.id])||0;
+    const lateDayMap=(w.lateDays||{})[s.id];
+    const lateRaw=lateDayMap?Object.keys(lateDayMap).length:(+((w.lateManual||{})[s.id])||0);
+    const reviews=+((w.reviews||{})[s.id])||0;
+    const covered=Math.floor(reviews/(cfg.reviewsPerLate||10));
+    const late=Math.max(0,lateRaw-covered);
+    const posuda=+((w.posuda||{})[s.id])||0;
+    const avans=+((w.avans||{})[s.id])||0;
+    const mode=shifts>0?'shift':'week';
+    const avg=shifts>0?fact/shifts:null;
+    const cashLvl=shifts>0
+      ?(avg>=cfg.shift8?8:(avg>=cfg.shift7?7:6))
+      :(fact>=cfg.week8?8:(fact>=cfg.week7?7:6));
+    const lateLvl=late>=cfg.late6?6:(late>=cfg.late7?7:8);
+    const autoLvl=Math.min(cashLvl,lateLvl);
+    const ov=(w.overrideLevel||{})[s.id];
+    const hasOverride=ov!==undefined&&ov!==null&&ov!=='';
+    const lvl=hasOverride?+ov:autoLvl;
+    const reason=(w.overrideReason||{})[s.id]||'';
+    const notes=(w.notes||[]).filter(n=>n.staffId===s.id);
+    const fine=notes.reduce((a,n)=>a+(+n.amount||0),0);
+    const pay=fact*lvl/100-posuda-avans-fine;
+    out.fund+=pay;out.factTotal+=fact;
+    out.rows.push({s,fact,shifts,late,lateRaw,reviews,covered,posuda,avans,mode,avg,cashLvl,lateLvl,autoLvl,
+      hasOverride,lvl,reason,pay,fine,notes});
+  });
+  out.rows.sort((a,b)=>b.fact-a.fact);
+  return out;
+}
+/* ================= НАВИГАЦИЯ ================= */
+const IC={
+ day:'<path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/>',
+ plan:'<path d="M3 3v18h18M7 15l4-5 4 3 5-7"/>',
+ sched:'<path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/>',
+ calc:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h4"/>',
+ more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
+const TABS=[['day','Сегодня'],['plan','План'],['calc','Расчёт'],['more','Ещё']];
+function drawNav(){document.getElementById('nav').innerHTML=TABS.map(([k,t])=>
+  `<button class="${tab===k?'on':''}" onclick="go('${k}')"><svg viewBox="0 0 24 24">${IC[k]}</svg>${T(t)}</button>`).join('');}
+function go(k){tab=k;drawNav();document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('p-'+k).classList.add('on');render();window.scrollTo(0,0);}
+function render(){save();
+  document.getElementById('langBtn').textContent=LANG==='ru'?'ҚАЗ':'РУС';
+  document.getElementById('wkLbl').textContent=wkLabel();
+  ({day:vDay,plan:vPlan,calc:vCalc,more:vMore})[tab]();
+  trDom(document.getElementById('p-'+tab));}
+function head(t,s){document.getElementById('hT').textContent=T(t);document.getElementById('hS').textContent=T(s||'');}
+
+/* ================= СЕГОДНЯ ================= */
+function vDay(){
+  head('Жаксылык','день по зонам');
+  const w=W();
+  if(!DB.zones.length||!DB.staff.length){
+    document.getElementById('p-day').innerHTML=`<div class="pad"><h2 class="t">День по зонам</h2>
+      <div class="card"><div class="empty"><b>Сначала настройка</b>
+        Добавьте официантов и зоны — без них расставить некого.
+        <div style="margin-top:14px"><button class="btn" onclick="go('more')">Открыть настройки</button></div>
+      </div></div></div>`;return;}
+  const chips=DAYS.map((d,i)=>{const dt=dayDate(i);
+    const zp=w.zonePlans[i]||{};const sum=Object.values(zp).reduce((a,b)=>a+(+b||0),0);
+    return `<button class="chip ${selDay===i?'on':''}" onclick="selDay=${i};render()">${d}
+      <small>${dt.getDate()} ${MON[dt.getMonth()]}${sum?' · '+fmtS(sum):''}</small></button>`;}).join('');
+  const zp=w.zonePlans[selDay]||{},asg=w.assign[selDay]||{};
+  const dayTotal=Object.values(zp).reduce((a,b)=>a+(+b||0),0);
+  const zoneCards=DB.zones.map(z=>{
+    const plan=+zp[z]||0,list=asg[z]||[];
+    const share=plan&&list.length?plan/list.length:0;
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <b style="font-family:var(--disp);font-weight:500;font-size:16px;letter-spacing:.06em;text-transform:uppercase">${z}</b>
+        <button class="btn gh sm" onclick="editZoneDay('${z}')">${plan?fmtS(plan):'Ставить план'}</button>
+      </div>
+      <div style="margin-top:11px">
+        ${list.length?list.map(id=>{const s=DB.staff.find(x=>x.id===id);
+          return `<span class="who">${s?s.name:'—'}<button onclick="unassign('${z}','${id}')" aria-label="Убрать">×</button></span>`;}).join('')
+        :'<span class="mini">Никого не поставили</span>'}
+      </div>
+      ${plan&&list.length?`<div class="mini" style="margin-top:9px">
+        На человека выходит ${fmtS(share)} · работают ${list.length}</div>`:''}
+      <div style="margin-top:11px"><button class="btn gh sm" onclick="pickStaff('${z}')">+ Поставить официанта</button></div>
+    </div>`;}).join('');
+  const dayNotes=(w.notes||[]).filter(n=>n.day===selDay);
+  document.getElementById('p-day').innerHTML=`
+    <div class="pad"><h2 class="t">День по зонам</h2>
+      <p class="sub">Утром: поставьте план каждой зоне, выберите, кто работает, и отметьте, кто опоздал.</p></div>
+    <div class="chips">${chips}</div>
+    <div class="pad">
+      ${dayTotal?`<div class="card" style="background:var(--soft);border-color:var(--line2)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <span class="mini">${dayPlanLabel()}</span>
+          <b style="font-family:var(--disp);font-weight:500;font-size:20px">${fmt(dayTotal)}</b></div></div>`:''}
+      <div class="cols">${zoneCards}</div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <b style="font-family:var(--disp);font-weight:500;font-size:15px;letter-spacing:.06em;text-transform:uppercase">Опоздания</b>
+          <span class="mini">${DAYS[selDay]}</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:11px">
+          ${DB.staff.filter(s=>s.active).map(s=>{
+            const late=!!((w.lateDays[s.id]||{})[selDay]);
+            return `<span style="padding:9px 13px;border-radius:100px;display:inline-block;
+              border:1px solid ${late?'var(--red)':'var(--line2)'};background:${late?'var(--red-l)':'var(--card)'};
+              color:${late?'var(--red)':'var(--ink)'};font-weight:700;font-size:13.5px">
+              ${s.short||s.name.split(' ')[0]}${late?' · опоздал':''}</span>`;}).join('')}
+        </div>
+        <div class="hint" style="margin-top:9px">${FG_CACHE.err?'Face Guard: '+FG_CACHE.err:'Опоздания подтягиваются автоматически из Face Guard, вручную не отмечаются.'}
+          ${FG_CACHE.ts?' · обновлено '+new Date(FG_CACHE.ts).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''}</div>
+        <button class="btn gh sm" style="margin-top:9px" onclick="fgSyncLate()">${FG_SYNCING?'Обновление…':'Обновить из Face Guard'}</button>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <b style="font-family:var(--disp);font-weight:500;font-size:15px;letter-spacing:.06em;text-transform:uppercase">Штрафы и замечания</b>
+          <span class="mini">${DAYS[selDay]}</span></div>
+        ${dayNotes.length?dayNotes.map(n=>{const s=DB.staff.find(x=>x.id===n.staffId);
+          return `<div class="rowitem"><div class="main"><b>${s?s.name:'—'}</b><span>${n.text||'без комментария'}</span></div>
+            ${+n.amount?`<span class="val" style="color:var(--red)">−${fmtS(n.amount)}</span>`:'<span class="badge b-dim">замечание</span>'}
+            <button class="x" onclick="rmNote('${n.id}')">×</button></div>`;}).join('')
+          :'<div class="mini" style="padding:12px 0">За этот день записей нет</div>'}
+        <div style="margin-top:12px"><button class="btn gh sm" onclick="addNote()">+ Штраф или замечание</button></div>
+      </div>
+    </div>`;
+}
+function editZoneDay(z){
+  const w=W(),cur=+(w.zonePlans[selDay]||{})[z]||0;
+  const lbl=LANG==='kz'?DAYFULL_KZ[selDay]+' жоспары':'план на '+DAYACC[selDay];
+  sheet(`<div class="sh"><div><b>${z}</b><span>${lbl}</span></div>
+      <button class="x" onclick="closeSheet()">×</button></div>
+    <label class="f"><span>План зоны на день, ₸</span>
+      <input type="number" id="zdP" inputmode="numeric" value="${cur||''}" placeholder="2000000" step="50000"></label>
+    <button class="btn" onclick="saveZoneDay('${z}')">Сохранить</button>`);
+}
+function saveZoneDay(z){
+  const w=W();if(!w.zonePlans[selDay])w.zonePlans[selDay]={};
+  const v=+document.getElementById('zdP').value||0;
+  if(v)w.zonePlans[selDay][z]=v;else delete w.zonePlans[selDay][z];
+  closeSheet();render();
+}
+function pickStaff(z){
+  const w=W(),asg=w.assign[selDay]||{};
+  const busy=new Set(Object.values(asg).flat());
+  const rest=DB.staff.filter(s=>s.active&&!busy.has(s.id));
+  if(!rest.length){alert('Все официанты уже расставлены');return;}
+  sheet(`<div class="sh"><div><b>${z}</b><span>кто работает ${DAYS[selDay]}</span></div>
+      <button class="x" onclick="closeSheet()">×</button></div>
+    ${rest.map(s=>`<button class="btn gh" style="margin-bottom:8px" onclick="assign('${z}','${s.id}')">${s.name}</button>`).join('')}`);
+}
+function assign(z,id){
+  const w=W();if(!w.assign[selDay])w.assign[selDay]={};
+  if(!w.assign[selDay][z])w.assign[selDay][z]=[];
+  if(!w.assign[selDay][z].includes(id))w.assign[selDay][z].push(id);
+  closeSheet();render();
+}
+function unassign(z,id){
+  const w=W();const l=(w.assign[selDay]||{})[z]||[];
+  w.assign[selDay][z]=l.filter(x=>x!==id);render();
+}
+function addNote(){
+  const act=DB.staff.filter(s=>s.active);
+  if(!act.length){alert('Сначала добавьте официантов');return;}
+  sheet(`<div class="sh"><div><b>Штраф или замечание</b>
+      <span>${DAYS[selDay]}, ${dayDate(selDay).getDate()} ${MON[dayDate(selDay).getMonth()]}</span></div>
+      <button class="x" onclick="closeSheet()">×</button></div>
+    <label class="f"><span>Официант</span><select id="nSt">
+      ${act.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select></label>
+    <label class="f"><span>Сумма штрафа, ₸</span>
+      <input type="number" id="nA" inputmode="numeric" placeholder="0 — если просто замечание" step="1000"></label>
+    <label class="f"><span>За что</span>
+      <textarea id="nT" rows="3" placeholder="Спор с гостем, грязная форма"></textarea></label>
+    <button class="btn" onclick="saveNote()">Записать</button>`);
+}
+function saveNote(){
+  const staffId=document.getElementById('nSt').value,amount=+document.getElementById('nA').value||0;
+  const text=document.getElementById('nT').value.trim();
+  if(!amount&&!text){alert('Укажите сумму или комментарий');return;}
+  const w=W();if(!w.notes)w.notes=[];
+  w.notes.push({id:'n'+Date.now(),day:selDay,staffId,amount,text});
+  closeSheet();render();
+}
+function rmNote(id){const w=W();w.notes=(w.notes||[]).filter(n=>n.id!==id);render();}
+
+/* ================= ПЛАН НЕДЕЛИ ================= */
+function vPlan(){
+  head('План','на неделю');
+  const w=W();
+  const daySums=[...Array(7)].map((_,d)=>Object.values(w.zonePlans[d]||{}).reduce((a,b)=>a+(+b||0),0));
+  const spread=daySums.reduce((a,b)=>a+b,0);
+  const left=(w.weekPlan||0)-spread;
+  document.getElementById('p-plan').innerHTML=`
+    <div class="pad"><h2 class="t">План на неделю</h2>
+      <p class="sub">Хозяйка ставит общий план на неделю заранее. Дневные планы по зонам
+        администратор расставляет каждое утро на вкладке «Сегодня».</p>
+      <div class="card">
+        <label class="f" style="margin-bottom:10px"><span>План кафе на неделю, ₸</span>
+          <input type="number" id="wp" inputmode="numeric" value="${w.weekPlan||''}" placeholder="21000000" step="500000"></label>
+        <button class="btn" onclick="saveWeekPlan()">Сохранить</button>
+      </div>
+      ${w.weekPlan?`<div class="kpis">
+        <div class="kpi"><small>Расставлено по дням</small><b>${fmtS(spread)}</b>
+          <div class="d dim">${Math.round(spread/w.weekPlan*100)}% плана</div></div>
+        <div class="kpi"><small>${left>=0?'Осталось расставить':'Перебор'}</small>
+          <b style="color:${Math.abs(left)<w.weekPlan*0.02?'var(--gr)':(left>0?'var(--amber)':'var(--red)')}">${fmtS(Math.abs(left))}</b></div>
+      </div>
+      <div class="card"><h3 class="s" style="margin:0 0 12px">По дням</h3>
+        ${DAYS.map((d,i)=>{const zp=w.zonePlans[i]||{};const s=daySums[i];
+          const zs=Object.entries(zp).filter(([,v])=>+v);
+          return `<div class="rowitem"><div class="main"><b>${DAYFULL[i]}</b>
+            <span>${zs.length?zs.map(([z,v])=>`${z} ${fmtS(v)}`).join(' · '):'план не поставлен'}</span></div>
+            <span class="val">${s?fmtS(s):'—'}</span>
+            <button class="x" onclick="selDay=${i};go('day')">›</button></div>`;}).join('')}
+      </div>`:`<div class="note am">Поставьте план на неделю — дальше можно расставлять его по дням и зонам.</div>`}
+    </div>`;
+}
+function saveWeekPlan(){W().weekPlan=+document.getElementById('wp').value||0;render();}
+
+function matchStaff(nm){
+  const q=norm(nm);
+  let s=DB.staff.find(x=>norm(x.name)===q);if(s)return s;
+  s=DB.staff.find(x=>norm(x.short||'')===q);if(s)return s;
+  s=DB.staff.find(x=>norm(x.name).split(' ').includes(q));if(s)return s;
+  s=DB.staff.find(x=>q.split(' ').some(p=>p.length>3&&norm(x.name).includes(p)));
+  return s||null;
+}
+
+/* ================= РАСЧЁТ ================= */
+function vCalc(){
+  head('Расчёт','итог недели');
+  const w=W(),r=calc(),cfg=DB.calcCfg;
+  const miss=[];
+  if(!Object.keys(w.revenue).length)miss.push(['Отчёт за неделю не загружен','more']);
+  const cnt={};r.rows.forEach(x=>cnt[x.lvl]=(cnt[x.lvl]||0)+1);
+  const lvlsPresent=Object.keys(cnt).map(Number).sort((a,b)=>b-a);
+  document.getElementById('p-calc').innerHTML=`
+    <div class="pad"><h2 class="t">Расчёт недели</h2>
+      <p class="sub">Уровень — по кассе за смену (или за неделю, если смены не внесены) и по опозданиям.
+        9% ставится вручную по каждому официанту отдельно.</p>
+      ${miss.length?`<div class="note am"><b>Не хватает данных:</b>
+        ${miss.map(([t,k])=>`<div style="margin-top:6px">• ${t} —
+          <button style="color:inherit;text-decoration:underline;font-weight:700" onclick="go('${k}')">заполнить</button></div>`).join('')}</div>`:''}
+      <div class="kpis">
+        <div class="kpi"><small>Касса недели</small><b>${fmtS(r.factTotal)}</b></div>
+        <div class="kpi"><small>К выплате</small><b>${fmtS(r.fund)}</b>
+          <div class="d dim">${r.factTotal?(r.fund/r.factTotal*100).toFixed(2)+'% от кассы':''}</div></div>
+      </div>
+      ${lvlsPresent.length?`<div class="kpis">${lvlsPresent.map(l=>`<div class="kpi" style="background:var(--soft);padding:10px">
+        <small>${l}%</small><b style="font-size:19px">${cnt[l]}</b></div>`).join('')}</div>`:''}
+      ${r.rows.length?`<div class="cols">`+r.rows.map(p=>`
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <b style="font-size:15.5px">${p.s.name}</b><span class="lvl l${p.lvl}">${p.lvl}%</span></div>
+          <div style="display:flex;justify-content:space-between;margin-top:10px">
+            <span class="mini">Касса ${fmtS(p.fact)}</span>
+            <span class="mini">${p.mode==='shift'?`За смену ${fmtS(p.avg)}`:'без смен — по неделе'}</span>
+          </div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:11px">
+            <span class="badge b-dim">смен ${p.shifts||'—'}</span>
+            <span class="badge ${p.late?'b-no':'b-dim'}">опозданий ${p.late}${p.covered?` (было ${p.lateRaw})`:''}</span>
+            ${p.reviews?`<span class="badge b-ok">отзывов ${p.reviews}</span>`:''}
+            <span class="badge b-dim">касса → ${p.cashLvl}%</span>
+            <span class="badge b-dim">дисциплина → ${p.lateLvl}%</span>
+            ${p.hasOverride?`<span class="badge b-ok">вручную ${p.lvl}%</span>`:''}
+            ${p.fine?`<span class="badge b-no">штраф −${fmtS(p.fine)}</span>`:''}
+          </div>
+          ${(p.posuda||p.avans)?`<div class="mini" style="margin-top:9px">
+            ${p.posuda?`посуда −${fmtS(p.posuda)}`:''}${p.posuda&&p.avans?' · ':''}${p.avans?`аванс −${fmtS(p.avans)}`:''}</div>`:''}
+          ${p.reason?`<div class="mini" style="margin-top:6px">причина 9%: ${p.reason}</div>`:''}
+          ${p.notes.length?`<div style="margin-top:9px">${p.notes.map(n=>
+            `<div class="mini">• ${DAYS[n.day]}: ${n.text||'замечание'}${+n.amount?` — ${fmtS(n.amount)}`:''}</div>`).join('')}</div>`:''}
+          <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <b style="font-family:var(--disp);font-weight:500;font-size:19px">${fmt(p.pay)}</b>
+            <button class="btn gh sm" onclick="openWeekly('${p.s.id}')">Смены, опоздания, 9%</button>
+          </div>
+        </div>`).join('')+`</div>`:'<div class="card"><div class="empty"><b>Нет данных</b>Загрузите отчёт за неделю.</div></div>'}
+      ${r.rows.length?`<div class="rowbtns">
+        <button class="btn" onclick="printPdf()">Отчёт в PDF</button>
+        <button class="btn gh" onclick="exportXls()">Excel</button></div>`:''}
+    </div>`;
+}
+function openWeekly(sid){
+  const s=DB.staff.find(x=>x.id===sid),w=W();
+  const dayMap=w.lateDays[sid]||{};
+  const lateCount=Object.keys(dayMap).length;
+  sheet(`<div class="sh"><div><b>${s.name}</b><span>опоздания — по дням, остальное — раз в неделю</span></div>
+      <button class="x" onclick="closeSheet()">×</button></div>
+    <h3 class="s" style="margin-top:0">Опоздания за неделю: ${lateCount} <span class="mini">(авто, Face Guard)</span></h3>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">
+      ${DAYS.map((d,i)=>{const late=!!dayMap[i];
+        return `<span style="padding:9px 13px;border-radius:100px;display:inline-block;
+          border:1px solid ${late?'var(--red)':'var(--line2)'};background:${late?'var(--red-l)':'var(--card)'};
+          color:${late?'var(--red)':'var(--ink)'};font-weight:700;font-size:13.5px">${d}${late?' ·':''}</span>`;}).join('')}
+    </div>
+    <h3 class="s">Остальное — раз в неделю</h3>
+    <label class="f"><span>Отзывов за неделю</span>
+      <input type="number" inputmode="numeric" id="wkRv" value="${(w.reviews||{})[sid]??''}"
+        placeholder="каждые ${(DB.calcCfg.reviewsPerLate||10)} отзывов гасят 1 опоздание"></label>
+    <label class="f"><span>Смен за неделю</span>
+      <input type="number" inputmode="numeric" id="wkSh" value="${(w.shiftsManual||{})[sid]??''}" placeholder="если пусто — расчёт по всей неделе"></label>
+    <label class="f"><span>За посуду, ₸ (вычитается)</span>
+      <input type="number" inputmode="numeric" id="wkPo" value="${(w.posuda||{})[sid]??''}"></label>
+    <label class="f"><span>Авансы, ₸ (вычитается)</span>
+      <input type="number" inputmode="numeric" id="wkAv" value="${(w.avans||{})[sid]??''}"></label>
+    <h3 class="s">9% вручную</h3>
+    <label class="f"><span>Уровень</span><select id="wkOv">
+      <option value="">Не назначать — считать автоматически</option>
+      <option value="9" ${(w.overrideLevel||{})[sid]==='9'||(w.overrideLevel||{})[sid]===9?'selected':''}>9%</option>
+      <option value="8" ${(w.overrideLevel||{})[sid]==='8'||(w.overrideLevel||{})[sid]===8?'selected':''}>8%</option>
+      <option value="7" ${(w.overrideLevel||{})[sid]==='7'||(w.overrideLevel||{})[sid]===7?'selected':''}>7%</option>
+      <option value="6" ${(w.overrideLevel||{})[sid]==='6'||(w.overrideLevel||{})[sid]===6?'selected':''}>6%</option>
+    </select></label>
+    <label class="f"><span>Причина</span>
+      <textarea id="wkRe" rows="2" placeholder="за что именно">${(w.overrideReason||{})[sid]||''}</textarea></label>
+    <button class="btn" onclick="saveWeekly('${sid}')">Сохранить</button>`);
+}
+function saveWeekly(sid){
+  const w=W();
+  const rv=document.getElementById('wkRv').value,
+        sh=document.getElementById('wkSh').value,
+        po=document.getElementById('wkPo').value, av=document.getElementById('wkAv').value,
+        ov=document.getElementById('wkOv').value, re=document.getElementById('wkRe').value.trim();
+  if(rv==='')delete w.reviews[sid];else w.reviews[sid]=+rv;
+  if(sh==='')delete w.shiftsManual[sid];else w.shiftsManual[sid]=+sh;
+  if(po==='')delete w.posuda[sid];else w.posuda[sid]=+po;
+  if(av==='')delete w.avans[sid];else w.avans[sid]=+av;
+  if(ov===''){delete w.overrideLevel[sid];delete w.overrideReason[sid];}
+  else{w.overrideLevel[sid]=+ov;w.overrideReason[sid]=re;}
+  closeSheet();render();
+}
+function exportXls(){
+  const r=calc();
+  const rows=[['Официант','Смен','Опозданий (было)','Отзывов','Опозданий (после)','Касса, ₸','За смену, ₸','Уровень %','Посуда','Авансы','Штрафы','К выплате']];
+  r.rows.forEach(p=>rows.push([p.s.name,p.shifts||'',p.lateRaw,p.reviews||'',p.late,Math.round(p.fact),
+    p.avg!=null?Math.round(p.avg):'',p.lvl,Math.round(p.posuda),Math.round(p.avans),Math.round(p.fine),Math.round(p.pay)]));
+  rows.push(['ИТОГО','','','','','','','','','','',Math.round(r.fund)]);
+  const ws=XLSX.utils.aoa_to_sheet(rows),wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Выплата');XLSX.writeFile(wb,`Выплата_${iso(curWeek)}.xlsx`);
+}
+function printPdf(){
+  const r=calc(),w=W(),e=new Date(curWeek);e.setDate(e.getDate()+6);const d=new Date();
+  document.getElementById('printArea').innerHTML=`
+    <div class="pr-h"><b>Кафе «Жаксылык» — расчёт оплаты официантов</b>
+      <span>Неделя ${curWeek.getDate()} ${MON[curWeek.getMonth()]} — ${e.getDate()} ${MON[e.getMonth()]} ${e.getFullYear()} ·
+        сформирован ${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}</span></div>
+    <div class="pr-k">
+      <div><small>Касса недели</small><b>${fmt(r.factTotal)}</b></div>
+      <div><small>К выплате</small><b>${fmt(r.fund)}</b></div>
+      <div><small>Доля от кассы</small><b>${r.factTotal?(r.fund/r.factTotal*100).toFixed(2)+'%':'—'}</b></div></div>
+    <table class="pr"><thead><tr>
+      <th>Официант</th><th class="n">Смен</th><th class="n">Опозд.</th><th class="n">Отзывов</th><th class="n">Касса</th>
+      <th class="n">За смену</th><th class="n">Уровень</th><th class="n">Посуда</th><th class="n">Авансы</th>
+      <th class="n">Штрафы</th><th class="n">К выплате</th></tr></thead>
+      <tbody>${r.rows.map(p=>`<tr><td>${p.s.name}</td><td class="n">${p.shifts||'—'}</td>
+        <td class="n">${p.late}${p.covered?` (было ${p.lateRaw})`:''}</td><td class="n">${p.reviews||'—'}</td>
+        <td class="n">${fmt(p.fact)}</td>
+        <td class="n">${p.mode==='shift'?fmt(p.avg):'—'}</td><td class="n">${p.lvl}%${p.hasOverride?' *':''}</td>
+        <td class="n">${p.posuda?'−'+fmt(p.posuda):'—'}</td><td class="n">${p.avans?'−'+fmt(p.avans):'—'}</td>
+        <td class="n">${p.fine?'−'+fmt(p.fine):'—'}</td><td class="n"><b>${fmt(p.pay)}</b></td></tr>`).join('')}</tbody>
+      <tfoot><tr><td colspan="10">Итого к выплате</td><td class="n">${fmt(r.fund)}</td></tr></tfoot></table>
+    ${r.rows.some(p=>p.notes.length)?`<div style="margin-top:14px">
+      <b style="font-size:10pt">Штрафы и замечания за неделю</b>
+      <table class="pr" style="margin-top:6px"><thead><tr><th>День</th><th>Официант</th><th>Причина</th><th class="n">Сумма</th></tr></thead>
+      <tbody>${r.rows.flatMap(p=>p.notes.map(n=>`<tr><td>${DAYS[n.day]}</td><td>${p.s.name}</td>
+        <td>${n.text||'замечание'}</td><td class="n">${+n.amount?fmt(n.amount):'—'}</td></tr>`)).join('')}</tbody></table></div>`:''}
+    ${r.rows.some(p=>p.hasOverride)?`<div style="margin-top:14px">
+      <b style="font-size:10pt">Уровень 9% назначен вручную</b>
+      <table class="pr" style="margin-top:6px"><thead><tr><th>Официант</th><th>Причина</th></tr></thead>
+      <tbody>${r.rows.filter(p=>p.hasOverride).map(p=>`<tr><td>${p.s.name}</td><td>${p.reason||'—'}</td></tr>`).join('')}</tbody></table></div>`:''}
+    <div class="pr-f">Уровень — меньший из двух потолков: касса за смену (или за неделю, если смены не внесены) и опоздания.
+      Каждые ${DB.calcCfg.reviewsPerLate||10} отзывов гасят одно опоздание — колонка «Опозданий» показывает итог уже с учётом отзывов.
+      * — уровень поставлен хозяйкой вручную. К выплате = касса × уровень − посуда − авансы − штрафы.</div>
+    <div class="pr-sign"><div>Подпись хозяйки</div><div>Подпись администратора</div></div>`;
+  window.print();
+}
+
+/* ================= ЕЩЁ ================= */
+function vMore(){
+  head('Настройки','');
+  const w=W();
+  document.getElementById('p-more').innerHTML=`
+    <div class="pad"><h2 class="t">Настройки</h2>
+
+      <h3 class="s">Официанты</h3>
+      <div class="card">
+        ${DB.staff.filter(s=>s.active).length
+          ?DB.staff.filter(s=>s.active).map(s=>`<div class="rowitem">
+            <div class="main"><b>${s.name}</b></div>
+            <button class="x" onclick="editStaff('${s.id}')">✎</button></div>`).join('')
+          :'<div class="mini">Список пуст</div>'}
+        ${DB.staff.filter(s=>!s.active).length?`<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)">
+          <div class="mini" style="margin-bottom:6px">Уволенные — ${DB.staff.filter(s=>!s.active).length}</div>
+          ${DB.staff.filter(s=>!s.active).map(s=>`<div class="rowitem" style="opacity:.6">
+            <div class="main"><b>${s.name}</b><span>уволен</span></div>
+            <button class="x" onclick="editStaff('${s.id}')">✎</button></div>`).join('')}</div>`:''}
+        <div style="margin-top:12px"><button class="btn gh sm" onclick="editStaff()">+ Добавить официанта</button></div>
+      </div>
+
+      <h3 class="s">Зоны</h3>
+      <div class="card">
+        ${DB.zones.length?DB.zones.map(z=>`<div class="rowitem"><div class="main"><b>${z}</b></div>
+          <button class="del" onclick="rmZone('${z}')">убрать</button></div>`).join(''):'<div class="mini">Зон нет</div>'}
+        <div style="margin-top:12px"><button class="btn gh sm" onclick="addZone()">+ Добавить зону</button></div>
+      </div>
+
+      <h3 class="s">Правила расчёта</h3>
+      <div class="card">
+        <div class="mini" style="line-height:1.75">
+          • Если внесены смены: касса ÷ смены. От ${fmtS(DB.calcCfg.shift8)} за смену — 8%,
+            от ${fmtS(DB.calcCfg.shift7)} — 7%, иначе 6%.<br>
+          • Если смены не внесены: вся касса за неделю. От ${fmtS(DB.calcCfg.week8)} — 8%,
+            от ${fmtS(DB.calcCfg.week7)} — 7%, иначе 6%.<br>
+          • Опозданий ${DB.calcCfg.late6} и больше — потолок 6%. Ровно ${DB.calcCfg.late7} — потолок 7%. Меньше — можно 8%.<br>
+          • Каждые ${DB.calcCfg.reviewsPerLate||10} отзывов гасят одно опоздание.<br>
+          • Итоговый уровень — меньший из двух. 9% в расчёте не участвует — хозяйка ставит его
+            вручную по конкретному официанту, в его карточке на вкладке «Расчёт».
+        </div>
+        <div style="margin-top:12px"><button class="btn gh sm" onclick="editCalcCfg()">Настроить пороги</button></div>
+      </div>
+
+      <h3 class="s">Выгрузка за неделю</h3>
+      <div class="card">
+        <label class="f"><span>Отчёт бухгалтера — касса по официантам</span>
+          <input type="file" accept=".xlsx,.xls" onchange="loadIiko(this)"></label>
+        ${Object.keys(w.revenue).length?`<div class="note">Загружено: ${Object.keys(w.revenue).length} официантов,
+          касса ${fmt(Object.values(w.revenue).reduce((a,b)=>a+b,0))}</div>`:''}
+        <div class="hint">Принимает и «Ведомость заработной платы», и старый отчёт iiko по зонам.
+          Если в файле есть колонки «за посуду» и «авансы» — заберёт их тоже.</div>
+      </div>
+      <div class="card">
+        <div class="rowitem"><div class="main"><b>Опоздания</b>
+          <span>отмечаются каждый день на вкладке «Сегодня»</span></div></div>
+        <div class="rowitem"><div class="main"><b>Смены, посуда, авансы, 9%</b>
+          <span>вносятся раз в неделю на вкладке «Расчёт»</span></div></div>
+      </div>
+
+      <h3 class="s">Общая база</h3>
+      <div class="card">
+        ${CLOUD.on?`<div class="rowitem"><div class="main"><b>${AUTH.email||'вход не выполнен'}</b>
+            <span id="cloudState">${({ok:'синхронизировано',sync:'отправка…',err:CLOUD.err||'нет связи или нужен вход',off:'выключено'})[CLOUD.state]}</span></div>
+            <span class="badge ${CLOUD.state==='ok'?'b-ok':'b-no'}" id="cloudBadge">${CLOUD.state==='ok'?'на связи':'проверьте'}</span></div>
+          <div class="rowbtns" style="margin-top:12px">
+            <button class="btn gh sm" onclick="checkCloud()">Проверить связь</button>
+            ${AUTH.token?`<button class="btn gh sm" onclick="logout()">Выйти</button>`
+                        :`<button class="btn gh sm" onclick="loginScreen()">Войти</button>`}
+            <button class="btn gh sm" onclick="cloudSetup()">Настройка</button></div>`
+        :`<div class="empty" style="padding:18px 6px"><b>Работает только здесь</b>
+            Что вы вносите, на других телефонах не появится.</div>
+          <button class="btn" onclick="cloudSetup()">Подключить общую базу</button>`}
+      </div>
+
+      <h3 class="s">Данные</h3>
+      <div class="card">
+        <div class="rowbtns">
+          <button class="btn gh sm" onclick="saveFile()">Сохранить в файл</button>
+          <button class="btn gh sm" onclick="document.getElementById('fL').click()">Загрузить файл</button></div>
+        <input type="file" id="fL" accept=".json" style="display:none" onchange="loadFile(this)">
+        <div class="note ${storeOK?'':'warn'}" style="margin-top:12px">
+          ${storeOK?'Всё сохраняется на этом устройстве само. Закрытие вкладки данные не удалит.'
+                   :'Автосохранение недоступно — обязательно сохраняйте в файл.'}</div>
+        <div style="margin-top:12px"><button class="del" onclick="wipe()">Удалить все данные</button></div>
+      </div>
+    </div>`;
+}
+const typeName=t=>t==='pct'?'проценты':(t==='bool'?'да / нет':'число');
+function addZone(){const z=prompt('Название зоны:');if(z&&z.trim()&&!DB.zones.includes(z.trim())){DB.zones.push(z.trim());render();}}
+function rmZone(z){if(confirm('Убрать зону «'+z+'»?')){DB.zones=DB.zones.filter(x=>x!==z);render();}}
+function editCalcCfg(){
+  const c=DB.calcCfg;
+  sheet(`<div class="sh"><div><b>Правила расчёта</b><span>пороги можно менять</span></div>
+      <button class="x" onclick="closeSheet()">×</button></div>
+    <h3 class="s" style="margin-top:0">Если известны смены — касса за смену</h3>
+    <label class="f"><span>От суммы — 8%, ₸</span><input type="number" inputmode="numeric" id="cS8" value="${c.shift8}"></label>
+    <label class="f"><span>От суммы — 7%, ₸</span><input type="number" inputmode="numeric" id="cS7" value="${c.shift7}"></label>
+    <h3 class="s">Если смены не вносили — вся касса за неделю</h3>
+    <label class="f"><span>От суммы — 8%, ₸</span><input type="number" inputmode="numeric" id="cW8" value="${c.week8}"></label>
+    <label class="f"><span>От суммы — 7%, ₸</span><input type="number" inputmode="numeric" id="cW7" value="${c.week7}"></label>
+    <h3 class="s">Опоздания — потолок уровня</h3>
+    <label class="f"><span>Опозданий для потолка 7%</span><input type="number" inputmode="numeric" id="cL7" value="${c.late7}"></label>
+    <label class="f"><span>Опозданий для потолка 6%</span><input type="number" inputmode="numeric" id="cL6" value="${c.late6}"></label>
+    <h3 class="s">Отзывы гасят опоздания</h3>
+    <label class="f"><span>Отзывов за 1 погашенное опоздание</span>
+      <input type="number" inputmode="numeric" id="cRv" value="${c.reviewsPerLate||10}"></label>
+    <button class="btn" onclick="saveCalcCfg()">Сохранить</button>
+    <div class="note">Итоговый уровень — меньший из двух: что дала касса и что позволила дисциплина.
+      Отзывы уменьшают число опозданий перед этим расчётом — каждые ${c.reviewsPerLate||10} отзывов гасят одно.
+      9% в расчёте не участвует — хозяйка ставит его вручную по конкретному человеку.</div>`);
+}
+function saveCalcCfg(){
+  DB.calcCfg={
+    shift8:+document.getElementById('cS8').value||375000,
+    shift7:+document.getElementById('cS7').value||275000,
+    week8:+document.getElementById('cW8').value||2200000,
+    week7:+document.getElementById('cW7').value||1000000,
+    late7:+document.getElementById('cL7').value||3,
+    late6:+document.getElementById('cL6').value||4,
+    reviewsPerLate:+document.getElementById('cRv').value||10,
+  };
+  closeSheet();render();
+}
+function editStaff(id){
+  const s=id?DB.staff.find(x=>x.id===id):null;
+  sheet(`<div class="sh"><div><b>${s?'Официант':'Новый официант'}</b>
+      <span>имя должно совпадать с отчётом бухгалтера</span></div>
+      <button class="x" onclick="closeSheet()">×</button></div>
+    <label class="f"><span>Имя и фамилия</span><input id="stN" value="${s?s.name:''}" placeholder="Кажытаев Ринат"></label>
+    <label class="f"><span>Короткое имя (как в расписании)</span>
+      <input id="stS" value="${s?(s.short||''):''}" placeholder="Ринат"></label>
+    <label class="f"><span>Как записан в iiko</span><input id="stI" value="${s?(s.iiko||''):''}" placeholder="если отличается"></label>
+    <button class="btn" onclick="saveStaff('${id||''}')">Сохранить</button>
+    ${s?`<button class="btn gh" style="margin-top:9px" onclick="toggleStaff('${id}')">${s.active?'Уволить':'Вернуть'}</button>
+      <div style="margin-top:14px;text-align:center">
+        <button class="del" onclick="delStaff('${id}')">Удалить навсегда</button></div>
+      <div class="hint" style="text-align:center">«Уволить» — человек уходит из расчётов, но история остаётся.
+        «Удалить» — стирается полностью, вместе со сменами и расчётами.</div>`:''}`);
+}
+function saveStaff(id){
+  const n=document.getElementById('stN').value.trim();if(!n){alert('Введите имя');return;}
+  const sh=document.getElementById('stS').value.trim(),i=document.getElementById('stI').value.trim();
+  if(id){const s=DB.staff.find(x=>x.id===id);s.name=n;s.short=sh;s.iiko=i||n;}
+  else DB.staff.push({id:'s'+Date.now()+Math.floor(Math.random()*99),name:n,short:sh,iiko:i||n,active:true});
+  closeSheet();render();
+}
+function toggleStaff(id){const s=DB.staff.find(x=>x.id===id);s.active=!s.active;closeSheet();render();}
+function delStaff(id){
+  const s=DB.staff.find(x=>x.id===id);
+  if(!confirm('Удалить «'+s.name+'» полностью? Его смены, планы и расчёты за все недели тоже сотрутся. Отменить будет нельзя.'))return;
+  DB.staff=DB.staff.filter(x=>x.id!==id);
+  Object.values(DB.weeks).forEach(w=>{
+    delete w.marks[id];delete w.manual[id];
+    if(w.lateManual)delete w.lateManual[id];
+    if(w.lateDays)delete w.lateDays[id];
+    if(w.reviews)delete w.reviews[id];
+    if(w.shiftsManual)delete w.shiftsManual[id];
+    if(w.posuda)delete w.posuda[id];
+    if(w.avans)delete w.avans[id];
+    if(w.overrideLevel)delete w.overrideLevel[id];
+    if(w.overrideReason)delete w.overrideReason[id];
+    w.notes=(w.notes||[]).filter(n=>n.staffId!==id);
+    Object.keys(w.assign||{}).forEach(d=>Object.keys(w.assign[d]).forEach(z=>{
+      w.assign[d][z]=w.assign[d][z].filter(x=>x!==id);}));
+  });
+  closeSheet();render();
+}
+async function checkCloud(){
+  CLOUD.err='';await cloudPull();
+  if(CLOUD.state==='ok'){await cloudPush();}
+  render();
+  alert(CLOUD.state==='ok'?'Связь есть, данные синхронизированы':('Не получилось: '+(CLOUD.err||'нет связи')));
+}
+function cloudSetup(){
+  sheet(`<div class="sh"><div><b>Общая база</b><span>чтобы все трое видели одно и то же</span></div>
+      <button class="x" onclick="closeSheet()">×</button></div>
+    <div class="note">Один раз создаётся бесплатный проект на supabase.com.</div>
+    <label class="f" style="margin-top:14px"><span>Адрес проекта (Project URL)</span>
+      <input id="cU" value="${CLOUD.url||''}" placeholder="https://xxxx.supabase.co"></label>
+    <label class="f"><span>Публичный ключ (anon public)</span>
+      <input id="cK" value="${CLOUD.key||''}" placeholder="eyJhbGciOi..."></label>
+    <button class="btn" onclick="saveCloud()">Подключить</button>
+    ${CLOUD.on?`<button class="btn gh" style="margin-top:9px" onclick="if(confirm('Отключить?'))cloudOff()">Отключить</button>`:''}
+    <h3 class="s">Как настроить</h3>
+    <div class="mini" style="line-height:1.75">
+      1. supabase.com → создать бесплатный проект<br>
+      2. Settings → API → скопировать Project URL и ключ anon public<br>
+      3. SQL Editor → выполнить код ниже<br>
+      4. Authentication → Users → создать трёх пользователей<br>
+      5. Каждый входит своей почтой</div>
+    <div style="background:var(--card);border:1px solid var(--line2);border-radius:10px;padding:12px;margin-top:10px;
+      font-family:ui-monospace,monospace;font-size:11.5px;line-height:1.6;white-space:pre-wrap;overflow-x:auto" id="sqlBox">create table state (
+  id int primary key,
+  rev int not null default 0,
+  data jsonb,
+  who text,
+  updated_at timestamptz default now()
+);
+alter table state enable row level security;
+create policy "r" on state for select to authenticated using (true);
+create policy "i" on state for insert to authenticated with check (true);
+create policy "u" on state for update to authenticated using (true);</div>
+    <button class="btn gh" style="margin-top:10px" onclick="copySql()">Скопировать код</button>`);
+}
+function copySql(){
+  const t=document.getElementById('sqlBox').innerText;
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>alert('Код скопирован'));
+  else alert('Скопируйте вручную');
+}
+function saveCloud(){
+  const u=document.getElementById('cU').value.trim(),k=document.getElementById('cK').value.trim();
+  if(!u||!k){alert('Заполните оба поля');return;}
+  cloudSaveCfg(u,k);closeSheet();loginScreen();
+}
+
+/* ================= ВЫГРУЗКИ ================= */
+function loadIiko(el){
+  const f=el.files[0];if(!f)return;
+  readXlsx(f,rows=>{
+    /* ищем строку заголовков — подходит и «Ведомость заработной платы» от бухгалтера,
+       и старый отчёт iiko по зонам */
+    let h=-1;
+    for(let i=0;i<Math.min(rows.length,20);i++){
+      if(rows[i].some(c=>/Официант/i.test(String(c||'')))){h=i;break;}
+    }
+    if(h<0){alert('Не удалось разобрать файл: не найдена строка с заголовками');return;}
+    const hdr=[];for(let i=0;i<rows[h].length;i++)hdr.push(String(rows[h][i]||'').toLowerCase());
+    const colName=hdr.findIndex(c=>c.includes('официант'));
+    let colTotal=hdr.findIndex(c=>c.includes('сумма продаж'));
+    if(colTotal<0)colTotal=hdr.findIndex(c=>c.includes('сумма со скидкой'));
+    if(colTotal<0)colTotal=hdr.map((c,i)=>({c,i})).filter(x=>x.c.includes('сумма')).pop()?.i ?? -1;
+    const colPosuda=hdr.findIndex(c=>c.includes('посуд'));
+    const colAvans=hdr.findIndex(c=>c.includes('аванс'));
+    if(colName<0||colTotal<0){alert('Не удалось разобрать файл: не найдены колонки «Официант» и «Сумма»');return;}
+
+    const body=rows.slice(h+1);
+    const isTotal=v=>/\sвсего\s*$/i.test(String(v||''));
+    const hasTotals=body.some(r=>isTotal(r[colName]));
+    const rev={},posuda={},avans={};
+    const num=v=>{const n=+String(v??'').replace(/\s/g,'').replace(',','.');return isNaN(n)?0:n;};
+    body.forEach(r=>{
+      let nm=String(r[colName]??'').trim();
+      if(!nm||/^итого$/i.test(nm))return;
+      const t=num(r[colTotal]);
+      if(t<=0)return;
+      if(hasTotals){
+        if(!isTotal(nm))return;
+        nm=nm.replace(/\s*всего\s*$/i,'').trim();
+      }
+      rev[nm]=(rev[nm]||0)+t;
+      if(colPosuda>=0)posuda[nm]=(posuda[nm]||0)+num(r[colPosuda]);
+      if(colAvans>=0)avans[nm]=(avans[nm]||0)+num(r[colAvans]);
+    });
+    if(!Object.keys(rev).length){alert('В файле не нашлось строк с выручкой официантов');return;}
+    W().revenue=rev;
+    if(colPosuda>=0||colAvans>=0){
+      const w=W();
+      Object.entries(rev).forEach(([nm])=>{
+        const s=matchStaff(nm);if(!s)return;
+        if(colPosuda>=0&&posuda[nm])w.posuda[s.id]=posuda[nm];
+        if(colAvans>=0&&avans[nm])w.avans[s.id]=avans[nm];
+      });
+    }
+    render();
+    const miss=Object.keys(rev).filter(n=>!matchStaff(n));
+    alert('Загружено: '+Object.keys(rev).length+' официантов, касса '+fmt(Object.values(rev).reduce((a,b)=>a+b,0))
+      +(colPosuda>=0?'\nПосуда — забрана из файла':'')
+      +(colAvans>=0?'\nАвансы — забраны из файла':'')
+      +(miss.length?'\n\nНе найдены в системе: '+miss.join(', '):''));
+  });
+}
+function readXlsx(f,cb){
+  const rd=new FileReader();
+  rd.onload=e=>{try{
+    const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',cellDates:true});
+    cb(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,blankrows:false}));
+  }catch(err){alert('Ошибка чтения: '+err.message);}};
+  rd.readAsArrayBuffer(f);
+}
+function saveFile(){
+  const b=new Blob([JSON.stringify(DB,null,1)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download=`Жаксылык_${iso(new Date())}.json`;a.click();URL.revokeObjectURL(a.href);
+}
+function loadFile(el){
+  const f=el.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=e=>{try{const o=JSON.parse(e.target.result);
+    if(!o.staff||!o.weeks)throw new Error('не тот файл');
+    Object.assign(DB,o);DB.calcCfg=Object.assign(defaultCalcCfg(),DB.calcCfg||{});render();alert('Данные загружены');
+  }catch(err){alert('Не удалось прочитать: '+err.message);}};
+  rd.readAsText(f);
+}
+
+/* ================= SHEET ================= */
+let sy=0;
+function sheet(h){
+  document.getElementById('sheet').innerHTML=h;
+  trDom(document.getElementById('sheet'));
+  document.getElementById('ov').classList.add('on');
+  sy=window.scrollY;
+  document.body.style.position='fixed';document.body.style.top=-sy+'px';
+  document.body.style.left='0';document.body.style.right='0';
+}
+function closeSheet(){
+  document.getElementById('ov').classList.remove('on');
+  document.body.style.position='';document.body.style.top='';
+  document.body.style.left='';document.body.style.right='';
+  window.scrollTo(0,sy);
+}
+
+/* ================= СТАРТ ================= */
+function seed(){
+  DB.zones=['Зал','Караоке','Терасса','Шатер','Кабинки'];
+}
+if(!load())seed();
+drawNav();render();cloudStart();
+</script>
+</body>
+</html>
